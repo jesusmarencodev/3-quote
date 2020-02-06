@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import styled from '@emotion/styled';
+import PropTypes from 'prop-types';
+import { getDiferenceYears, calculateBrand, calculatePlan } from '../helper';
 
 const Field = styled.div`
     display:flex;
@@ -36,14 +38,77 @@ const Button = styled.button`
         cursor: pointer;
     }
 `;
-const Form = () => {
-    const [data, setData] = useState([]);
+const Error = styled.div`
+    background-color: red;
+    color: white;
+    padding: 1rem;
+    width:100%;
+    text-align:center;
+    margin-bottom:2rem;
+`;
+const Form = ({setSummary}) => {
+    const [data, setData] = useState({
+        brand:'',
+        year:'',
+        plan:''
+    });
+    const [error, setError] = useState(false);
+
+    const { brand, year, plan } = data;
+
+    //Reading data of form
+    const getData = e => {
+        setData({
+            ...data,
+            [e.target.name]:e.target.value
+        })
+    }
+    //Submit
+    const quoteInsurance = e =>{
+        e.preventDefault();
+        if(brand.trim() === '' || year.trim() === '' || plan.trim() === ''){
+            setError(true);
+            return;
+        }
+        setError(false);
+
+        //insurance of base
+        let result = 2000;//dollars
+
+        //get the diference in years
+        const diferenceYears = getDiferenceYears(year);
+        
+        //for each year subtract 3% of the value
+        result -= ((diferenceYears * 3 ) * result)/100;
+        
+        //current value increase
+        
+        //American 15%
+        //Asian 5%
+        //European 30%
+        result = calculateBrand(brand) * result ;
+        
+        //basic plan increase 20%
+        //Full plan increase 50%
+        result = parseFloat(calculatePlan(plan) * result).toFixed(2);
+        //Total
+
+        setSummary({
+            quotation : result,
+            data
+        })
+    }
 
     return (
-        <form>
+        <form onSubmit={quoteInsurance}>
+            {error ? <Error>All fields are required</Error> : null}
             <Field>
                 <Label htmlFor="brand">Brand</Label>
-                <Select>
+                <Select
+                    name="brand"
+                    value={brand}
+                    onChange={getData}
+                >
                     <option value="">Select</option>
                     <option value="American">American</option>
                     <option value="European">European</option>
@@ -52,7 +117,11 @@ const Form = () => {
             </Field>
             <Field>
                 <Label htmlFor="year">Year</Label>
-                <Select>
+                <Select
+                    name="year"
+                    value={year}
+                    onChange={getData}
+                >
                     <option value="">Select</option>
                     <option value="2021">2021</option>
                     <option value="2020">2020</option>
@@ -72,16 +141,24 @@ const Form = () => {
                     type="radio"
                     name="plan"
                     value="basic"
+                    checked={plan === "basic"}
+                    onChange={getData}
                 />Basic
                 <InputRadio 
                     type="radio"
                     name="plan"
                     value="full"
+                    checked={plan === "full"}
+                    onChange={getData}
                 />Full
             </Field>
-            <Button type="button">Quote</Button>
+            <Button type="submit">Quote</Button>
         </form>
     );
 };
+
+Form.propTypes = {
+    setSummary : PropTypes.func.isRequired
+}
 
 export default Form;
