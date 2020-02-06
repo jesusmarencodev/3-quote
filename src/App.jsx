@@ -1,9 +1,11 @@
-import React, {useState}  from 'react';
+import React, {useState, Fragment}  from 'react';
 import Header from './components/Header';
 import styled from '@emotion/styled';
 import Form from './components/Form';
 import Summary from './components/Summary';
 import Result from './components/Result';
+import Spinner from './components/Spinner';
+
 
 const Container = styled.div`
   max-width:600px;
@@ -26,6 +28,8 @@ function App() {
     }
   }); 
 
+  const [loading, setLoading] = useState(false);
+
   const {data, quotation} = summary;
   
   return (
@@ -34,11 +38,22 @@ function App() {
       <FormContainer>
         <Form
           setSummary={setSummary}
+          setLoading={setLoading}
         />
-        <Summary
-          data={data}
-        />
-        <Result quotation={quotation} />
+        {loading ? <Spinner/> : null}
+
+        {!loading ? 
+          (
+            <Fragment>
+              <Summary
+                data={data}
+              />
+              <Result quotation={quotation} />
+            </Fragment>
+          )
+          
+          :null
+        }
       </FormContainer>
     </Container>
   );

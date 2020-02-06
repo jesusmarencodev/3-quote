@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
+
 const Message = styled.p`
     background-color: rgb(127, 224, 237);
     margin-top: 2rem;
@@ -37,3 +38,8 @@ export default function Result({quotation}) {
             )
     )
 }
+
+Result.propTypes = {
+    quotation : PropTypes.number.isRequired,
+}
+

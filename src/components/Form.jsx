@@ -46,7 +46,7 @@ const Error = styled.div`
     text-align:center;
     margin-bottom:2rem;
 `;
-const Form = ({setSummary}) => {
+const Form = ({setSummary, setLoading}) => {
     const [data, setData] = useState({
         brand:'',
         year:'',
@@ -93,10 +93,16 @@ const Form = ({setSummary}) => {
         result = parseFloat(calculatePlan(plan) * result).toFixed(2);
         //Total
 
-        setSummary({
-            quotation : result,
-            data
-        })
+        setLoading(true);
+        setTimeout(() => {
+            setLoading(false);
+            setSummary({
+                quotation : result,
+                data
+            })
+        },3000)
+
+
     }
 
     return (
@@ -158,7 +164,8 @@ const Form = ({setSummary}) => {
 };
 
 Form.propTypes = {
-    setSummary : PropTypes.func.isRequired
+    setSummary : PropTypes.func.isRequired,
+    setLoading : PropTypes.func.isRequired
 }
 
 export default Form;
